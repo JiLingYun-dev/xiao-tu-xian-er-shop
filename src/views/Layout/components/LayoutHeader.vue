@@ -66,6 +66,8 @@ onMounted(() => {
 
         &:hover {
           color: $xtxColor;
+          border-bottom: 2px solid #6cdb7b;
+          box-shadow: 0 0 10px;
         }
       }
 
