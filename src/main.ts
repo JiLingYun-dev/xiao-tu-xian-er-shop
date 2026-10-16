@@ -4,9 +4,13 @@ import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
 
+// 引入初始化的样式文件 / 引入全局样式文件
+import "@/styles/common.scss";
+// import "@/styles/var.scss";
+
 const app = createApp(App);
 
-// import { getCategory } from "@/apis/testAPI.ts";
+// import { getCategory } from "@/apis/testAPI.tys";
 
 // getCategory().then((res) => {
 //   console.log(res);

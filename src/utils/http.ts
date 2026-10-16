@@ -3,7 +3,7 @@ import axios from "axios";
 // 创建 axios 实例，统一管理接口请求的公共配置
 // 在 JS 中，函数是一种特殊的对象，所以可以挂载方法，这里的http本质上是一个函数（特殊的对象）
 // axios.create() 方法可以执行多次，每次执行都会生成一个新的实例（用来解决不同业务模块需要的接口基地址不同）
-const http = axios.create({
+const httpInstance = axios.create({
   baseURL: "/api",
   timeout: 5000,
 });
@@ -11,7 +11,7 @@ const http = axios.create({
 // axios 请求拦截器
 
 // httpInstance.interceptors.request 表示这是对请求进行拦截; .use(onFulfilled, onRejected) 表示注册两个回调函数
-http.interceptors.request.use(
+httpInstance.interceptors.request.use(
   (config) => {
     return config; // 请求成功发出前执行，接收请求配置 config，必须返回 config（或修改后的 config），否则请求不会执行
   },
@@ -29,11 +29,11 @@ http.interceptors.request.use(
 // res.status：HTTP状态码
 // res.headers：响应头
 // res.config：请求配置
-http.interceptors.response.use(
+httpInstance.interceptors.response.use(
   (res) => res.data,
   (e) => {
     return Promise.reject(e);
   },
 );
 // 导出 axios 实例
-export default http;
+export default httpInstance;
