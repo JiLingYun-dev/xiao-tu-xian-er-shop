@@ -1,4 +1,21 @@
-<script setup></script>
+<script setup>
+import { getCategoryAPI } from "@/apis/Layout";
+import { onMounted, ref } from "vue";
+
+const categoryList = ref([]);
+const getCategory = async () => {
+  // 当请求成功时 getCategoryAPI()会返回一个AxiosPromise对象,请求失败会返回一个AxiosError对象
+
+  // 这里的之所以把res 塞进函数作用域里面是为了保证每次得到的新的响应式对象对应不同的res
+  const res = await getCategoryAPI();
+  // 这里进行两个引用变量之间的赋值
+  categoryList.value = res.result;
+};
+
+onMounted(() => {
+  getCategory();
+});
+</script>
 
 <template>
   <header class="app-header">
@@ -7,17 +24,8 @@
         <RouterLink to="/">小兔鲜</RouterLink>
       </h1>
       <ul class="app-header-nav">
-        <li class="home">
-          <RouterLink to="/">首页</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">居家</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">美食</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">服饰</RouterLink>
+        <li class="home" v-for="item in categoryList" :key="item.id">
+          <RouterLink to="/">{{ item.name }}</RouterLink>
         </li>
       </ul>
       <div class="search">
