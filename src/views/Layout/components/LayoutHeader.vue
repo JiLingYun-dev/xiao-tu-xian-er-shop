@@ -1,20 +1,12 @@
-<script setup>
-import { getCategoryAPI } from "@/apis/Layout";
-import { onMounted, ref } from "vue";
+<script setup lang="ts">
+import { storeToRefs } from "pinia";
 
-const categoryList = ref([]);
-const getCategory = async () => {
-  // 当请求成功时 getCategoryAPI()会返回一个AxiosPromise对象,请求失败会返回一个AxiosError对象
+import useCategoryStore from "@/stores/category";
 
-  // 这里的之所以把res 塞进函数作用域里面是为了保证每次得到的新的响应式对象对应不同的res
-  const res = await getCategoryAPI();
-  // 这里进行两个引用变量之间的赋值
-  categoryList.value = res.result;
-};
+const categoryStore = useCategoryStore();
 
-onMounted(() => {
-  getCategory();
-});
+const { categoryList } = storeToRefs(categoryStore);
+console.log(categoryList);
 </script>
 
 <template>
@@ -24,6 +16,9 @@ onMounted(() => {
         <RouterLink to="/">小兔鲜</RouterLink>
       </h1>
       <ul class="app-header-nav">
+        <li>
+          <RouterLink to="/">首页</RouterLink>
+        </li>
         <li class="home" v-for="item in categoryList" :key="item.id">
           <RouterLink to="/">{{ item.name }}</RouterLink>
         </li>
@@ -54,10 +49,12 @@ onMounted(() => {
 
     li {
       a {
-        padding: 0 15px;
-        color: #cdcdcd;
+        padding: 0 20px;
+        // color: #cdcdcd;
         line-height: 1;
-        display: inline-block;
+        font-size: 16px;
+        // 父容器的display: flex会覆盖子容器的display: inline-block;
+        // display: inline-block;
 
         i {
           font-size: 14px;
@@ -71,7 +68,7 @@ onMounted(() => {
         }
       }
 
-      ~ li {
+      &:li {
         a {
           border-left: 2px solid #666;
         }

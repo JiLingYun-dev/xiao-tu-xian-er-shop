@@ -1,6 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { useScroll } from "@vueuse/core";
 
+import { storeToRefs } from "pinia";
+import useCategoryStore from "@/stores/category";
+
+const categoryStore = useCategoryStore();
+
+const { categoryList } = storeToRefs(categoryStore);
 const { y } = useScroll(window);
 </script>
 
@@ -12,38 +18,11 @@ const { y } = useScroll(window);
       <!-- 导航区域 -->
       <!-- {{ y }} -->
       <ul class="app-header-nav">
-        <li class="home">
-          <RouterLink to="/">首页</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">居家</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">美食</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">服饰</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">母婴</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">个护</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">严选</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">数码</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">运动</RouterLink>
-        </li>
-        <li>
-          <RouterLink to="/">杂项</RouterLink>
+        <!-- 注意: 在template 里面所有的RefImpl都会被自动解构,不用再写.value -->
+        <li class="home" v-for="item in categoryList" :kry="item.id">
+          <RouterLink to="/">{{ item.name }}</RouterLink>
         </li>
       </ul>
-
       <div class="right">
         <RouterLink to="/">品牌</RouterLink>
         <RouterLink to="/">专题</RouterLink>
@@ -111,6 +90,7 @@ const { y } = useScroll(window);
     height: 80px;
     // 设置背景图片: 图片路径 不重复平铺 水平靠右 垂直距离顶部 2px
     background: url("@/assets/images/logo.png") no-repeat 2px;
+    // 设置背景图片大小
     background-size: 160px auto;
   }
 
@@ -123,7 +103,7 @@ const { y } = useScroll(window);
 
     a {
       width: 38px;
-      margin-right: 40px;
+      margin-right: 0 20px;
       font-size: 16px;
       line-height: 1;
 
