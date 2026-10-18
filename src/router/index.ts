@@ -3,7 +3,7 @@ import Layout from "../views/Layout/index.vue";
 import Login from "@/views/Login/index.vue";
 import Home from "@/views/Home/index.vue";
 import Category from "@/views/Category/index.vue";
-
+import Details from "@/views/Home/components/HomeDetail.vue";
 // import home from "@/App.vue";
 
 const router = createRouter({
@@ -16,6 +16,12 @@ const router = createRouter({
         {
           path: "", // 这里将路由置空，当浏览器访问"/"的时候，默认显示这个组件（默认二级路由）
           component: Home,
+          children: [
+            {
+              path: "detail/:id",
+              component: Details,
+            },
+          ],
         },
         {
           path: "category",

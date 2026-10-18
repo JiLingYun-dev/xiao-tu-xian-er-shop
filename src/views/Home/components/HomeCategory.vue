@@ -22,7 +22,7 @@ const categoryStore = useCategoryStore();
                 <div class="info">
                   <p class="name ellipsis-2">{{ i.name }}</p>
                   <p class="desc ellipsis">{{ i.desc }}</p>
-                  <p class="price"><i>💰</i></p>
+                  <p class="price"><i>&yen;</i></p>
                 </div>
               </RouterLink>
             </li>
