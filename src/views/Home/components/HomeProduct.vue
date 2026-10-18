@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import HomePanel from "./HomePanel.vue";
 import { getGoodsAPI } from "@/apis/home.ts";
+import GoodsItem from "./GoodsItem.vue";
 
 import { ref, onMounted } from "vue";
 
@@ -60,13 +61,13 @@ onMounted(() => {
         </RouterLink>
         <ul class="goods-list">
           <li v-for="goods in cate.goods" :key="goods.id">
-            <!-- <GoodsItem :goods="goods" /> -->
-            <RouterLink to="/" class="goods-item">
+            <GoodsItem :goods="goods" />
+            <!-- <RouterLink to="/" class="goods-item">
               <img v-img-lazy="goods.picture" alt="图片加载失败" />
               <p class="name ellipsis">{{ goods.name }}</p>
               <p class="desc ellipsis">{{ goods.desc }}</p>
               <p class="price">&yen;{{ goods.price }}</p>
-            </RouterLink>
+            </RouterLink> -->
           </li>
         </ul>
       </div>
@@ -146,26 +147,28 @@ onMounted(() => {
       display: flex;
       flex-wrap: wrap;
 
-      .goods-item {
-        transition:
-          transform 0.3s,
-          box-shadow 0.3s;
-      }
-      .goods-item:hover {
-        display: block;
-        transform: translate3d(0, -3px, 0);
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-      }
+      // .goods-item {
+      //   transition:
+      //     transform 0.3s,
+      //     box-shadow 0.3s;
+      // }
+      // .goods-item:hover {
+      //   display: block;
+      //   transform: translate3d(0, -3px, 0);
+      //   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      // }
       li {
         width: 240px;
         height: 300px;
         margin-right: 10px;
         margin-bottom: 10px;
+        // 这里的 nth-last-child 和 nth-child 是CSS伪类
 
+        // nth-last-child(-n + 4) 的作用是“按倒数第n个”来匹配统计兄弟元素
         &:nth-last-child(-n + 4) {
           margin-bottom: 0;
         }
-
+        // 这里的 nth-child(n) 是按照正数第n个来匹配兄弟级元素
         &:nth-child(4n) {
           margin-right: 0;
         }
