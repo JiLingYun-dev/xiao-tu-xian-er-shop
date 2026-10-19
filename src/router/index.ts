@@ -18,13 +18,14 @@ const router = createRouter({
           component: Home,
           children: [
             {
+              // 这里的动态段必须和 RouterLink 绑定的动态参数保持一致
               path: "detail/:id",
               component: Details,
             },
           ],
         },
         {
-          path: "category",
+          path: "category/:id",
           component: Category,
         },
       ],

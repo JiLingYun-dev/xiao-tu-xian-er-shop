@@ -20,7 +20,7 @@ const { y } = useScroll(window);
       <ul class="app-header-nav">
         <!-- 注意: 在template 里面所有的RefImpl都会被自动解构,不用再写.value -->
         <li class="home" v-for="item in categoryList" :kry="item.id">
-          <RouterLink to="/">{{ item.name }}</RouterLink>
+          <RouterLink :to="`/category/${item.id}`">{{ item.name }}</RouterLink>
         </li>
       </ul>
       <div class="right">
