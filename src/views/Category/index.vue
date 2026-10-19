@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { getCategoryAPI } from "@/apis/category";
-
 // 通过 useRoute 获取路由参数
 import { useRoute } from "vue-router";
+
+import { onMounted, ref } from "vue";
+import { getCategoryAPI } from "@/apis/category";
+import { getBannerAPI } from "@/apis/home";
+
 const route = useRoute();
 
 interface Result {
@@ -43,13 +45,33 @@ const categoryData = ref<Result>({} as Result);
 const getCategoryData = async () => {
   // 注意区分 query 传参和 params 传参
   const res = (await getCategoryAPI(route.params.id)) as unknown as Res;
-  console.log(res);
+  // console.log(res);
   categoryData.value = res.result;
+};
+
+interface Picture {
+  id: number;
+  imgUrl: string;
+  hrefUrl: string;
+}
+interface BannerList {
+  code: number;
+  msg: string;
+  result: Picture[];
+}
+
+const bannerList = ref<Picture[]>([]);
+
+const getBanner = async () => {
+  const res = (await getBannerAPI({ distributionSite: "2" })) as unknown as BannerList;
+
+  bannerList.value = res.result;
 };
 
 onMounted(() => {
   // console.log(route.params.id);
   getCategoryData();
+  getBanner();
 });
 </script>
 
@@ -65,15 +87,15 @@ onMounted(() => {
         </el-breadcrumb>
       </div>
       <!-- 轮播图 -->
-      <!-- <div class="home-banner">
+      <div class="home-banner">
         <el-carousel height="500px">
-          <el-carousel-item v-for="item in 3" :key="item">
-            <img src="item" alt="" />
+          <el-carousel-item v-for="item in bannerList" :key="item.id">
+            <img :src="item.imgUrl" alt="testing" />
           </el-carousel-item>
         </el-carousel>
       </div>
-      <div class="sub-list"> -->
-      <!-- <h3>全部分类</h3>
+      <!-- <div class="sub-list">
+        <h3>全部分类</h3>
         <ul>
           <li v-for="i in 6" :key="i">
             <RouterLink to="/">
@@ -82,8 +104,8 @@ onMounted(() => {
             </RouterLink>
           </li>
         </ul>
-      </div>
-      <div class="ref-goods" v-for="item in 7" :key="item">
+      </div> -->
+      <!-- <div class="ref-goods" v-for="item in 7" :key="item">
         <div class="head">
           <h3>- name-</h3>
         </div>
