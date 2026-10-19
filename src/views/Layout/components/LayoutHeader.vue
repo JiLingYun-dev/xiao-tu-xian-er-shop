@@ -20,7 +20,10 @@ console.log(categoryList);
           <RouterLink to="/">首页</RouterLink>
         </li>
         <li class="home" v-for="item in categoryList" :key="item.id">
-          <RouterLink :to="`/category/${item.id}`">{{ item.name }}</RouterLink>
+          <!-- active-class 实现激活状态控制 -->
+          <RouterLink :to="`/category/${item.id}`" active-class="active">{{
+            item.name
+          }}</RouterLink>
         </li>
       </ul>
       <div class="search">
@@ -47,6 +50,10 @@ console.log(categoryList);
     justify-content: flex-end;
     align-items: center;
 
+    .active {
+      color: $xtxColor;
+      border-bottom: 1px solid $xtxColor;
+    }
     li {
       a {
         padding: 0 20px;

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 // 通过 useRoute 获取路由参数
-import { useRoute } from "vue-router";
+import { useRoute, onBeforeRouteUpdate } from "vue-router";
 
 import { onMounted, ref } from "vue";
 import { getCategoryAPI } from "@/apis/category";
 import { getBannerAPI } from "@/apis/home";
+
+import GoodsItem from "../Home/components/GoodsItem.vue";
 
 const route = useRoute();
 
@@ -42,9 +44,10 @@ interface Res {
 }
 
 const categoryData = ref<Result>({} as Result);
-const getCategoryData = async () => {
+const getCategoryData = async (id: string | string[] | undefined = route.params.id) => {
   // 注意区分 query 传参和 params 传参
-  const res = (await getCategoryAPI(route.params.id)) as unknown as Res;
+  // 这里的 route.params.id 具有滞后性
+  const res = (await getCategoryAPI(id)) as unknown as Res;
   // console.log(res);
   categoryData.value = res.result;
 };
@@ -67,6 +70,12 @@ const getBanner = async () => {
 
   bannerList.value = res.result;
 };
+
+// 路由前置守卫解决组件复用（缓存问题）
+// 这里的 to 实参用来解决 route.params.id 的滞后性
+onBeforeRouteUpdate((to) => {
+  getCategoryData(to.params.id);
+});
 
 onMounted(() => {
   // console.log(route.params.id);
@@ -94,25 +103,25 @@ onMounted(() => {
           </el-carousel-item>
         </el-carousel>
       </div>
-      <!-- <div class="sub-list">
+      <div class="sub-list">
         <h3>全部分类</h3>
         <ul>
-          <li v-for="i in 6" :key="i">
-            <RouterLink to="/">
-              <img src="i" />
-              <p>name</p>
+          <li v-for="i in categoryData.children" :key="i.id">
+            <RouterLink :to="{ path: `/category/1005000` }">
+              <img :src="i.picture" />
+              <p>{{ i.name }}</p>
             </RouterLink>
           </li>
         </ul>
-      </div> -->
-      <!-- <div class="ref-goods" v-for="item in 7" :key="item">
+      </div>
+      <div class="ref-goods" v-for="item in categoryData.children" :key="item.id">
         <div class="head">
-          <h3>- name-</h3>
+          <h3>- {{ item.name }} -</h3>
         </div>
         <div class="body">
-          <GoodsItem v-for="good in item" :goods="good" :key="good" />
+          <GoodsItem v-for="good in item.goods" :goods="good" :key="good.id" />
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
