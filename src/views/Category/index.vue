@@ -1,87 +1,15 @@
 <script setup lang="ts">
 // 通过 useRoute 获取路由参数
-import { useRoute, onBeforeRouteUpdate } from "vue-router";
-
-import { onMounted, ref } from "vue";
-import { getCategoryAPI } from "@/apis/category";
-import { getBannerAPI } from "@/apis/home";
-
 import GoodsItem from "../Home/components/GoodsItem.vue";
 
-const route = useRoute();
+// 组合式函数复用（逻辑封装）
+import useBanner from "./composables/useBanner.ts";
 
-interface Result {
-  id: string;
-  name: string;
-  picture: string;
-  children: Children[];
-}
+const { bannerList } = useBanner();
 
-interface Children {
-  id: string;
-  name: string;
-  picture: string;
-  parentId: null;
-  parentName: null;
-  categories: null;
-  brands: null;
-  saleProperties: null;
-  goods: Goods[];
-}
+import useCategory from "./composables/useCategory.ts";
 
-interface Goods {
-  id: string;
-  name: string;
-  desc: string;
-  price: string;
-  orderNum: number;
-}
-
-interface Res {
-  code: string;
-  msg: string;
-  result: Result;
-}
-
-const categoryData = ref<Result>({} as Result);
-const getCategoryData = async (id: string | string[] | undefined = route.params.id) => {
-  // 注意区分 query 传参和 params 传参
-  // 这里的 route.params.id 具有滞后性
-  const res = (await getCategoryAPI(id)) as unknown as Res;
-  // console.log(res);
-  categoryData.value = res.result;
-};
-
-interface Picture {
-  id: number;
-  imgUrl: string;
-  hrefUrl: string;
-}
-interface BannerList {
-  code: number;
-  msg: string;
-  result: Picture[];
-}
-
-const bannerList = ref<Picture[]>([]);
-
-const getBanner = async () => {
-  const res = (await getBannerAPI({ distributionSite: "2" })) as unknown as BannerList;
-
-  bannerList.value = res.result;
-};
-
-// 路由前置守卫解决组件复用（缓存问题）
-// 这里的 to 实参用来解决 route.params.id 的滞后性
-onBeforeRouteUpdate((to) => {
-  getCategoryData(to.params.id);
-});
-
-onMounted(() => {
-  // console.log(route.params.id);
-  getCategoryData();
-  getBanner();
-});
+const { categoryData } = useCategory();
 </script>
 
 <template>
@@ -107,7 +35,7 @@ onMounted(() => {
         <h3>全部分类</h3>
         <ul>
           <li v-for="i in categoryData.children" :key="i.id">
-            <RouterLink :to="{ path: `/category/1005000` }">
+            <RouterLink :to="{ path: `/category/sub/${i.id}` }">
               <img :src="i.picture" />
               <p>{{ i.name }}</p>
             </RouterLink>

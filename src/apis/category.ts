@@ -14,3 +14,30 @@ export function getCategoryAPI(id: undefined | string | string[]) {
     },
   });
 }
+
+// export const getCategoryFilterAPI = (id: undefined | string | string[]) => {
+//   return {
+//     // GET 请求可以省略掉 method 配资项
+//     url: "category/sub/filter",
+//     params: id,
+//   };
+// };
+
+export function getCategoryFilterAPI(id: undefined | string | string[]) {
+  return request({
+    url: "/category/sub/filter",
+    params: {
+      id,
+    },
+  });
+}
+
+export const getSubCategoryAPI = (data: any) => {
+  return request({
+    url: "/category/goods/temporary",
+    method: "post",
+    data,
+  });
+};
+
+// export const __test__ = 1;
