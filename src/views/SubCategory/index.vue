@@ -59,6 +59,7 @@ onMounted(() => {
 
 // 获得基础列表数据渲染
 const goodsList = ref<goodsGoods[]>([]);
+
 const reqData = ref({
   categoryId: route.params.id,
   page: 1,
@@ -69,11 +70,55 @@ const getGoodsList = async () => {
   const res = (await getSubCategoryAPI(reqData.value)) as any;
 
   goodsList.value = res.result.items;
-  console.log(res);
+  // console.log(res);
 };
 onMounted(() => {
   getGoodsList();
 });
+
+// tab 切换回调
+const tabChange = () => {
+  // console.log("tab切换", reqData.value.sortField);
+  reqData.value.page = 1;
+  getGoodsList();
+};
+
+interface Items {
+  desc: string;
+  id: string;
+  name: string;
+  orderNum: number;
+  picture: string;
+  price: string;
+}
+
+interface Resul {
+  counts: string;
+  items: Items[];
+  page: number;
+  pageSize: number;
+  pages: number;
+}
+
+interface Obj {
+  msg: string;
+  code: string;
+  result: Resul;
+}
+
+const load = async () => {
+  console.log("loading");
+  reqData.value.page++;
+  const res = (await getSubCategoryAPI(reqData.value)) as unknown as Obj;
+  console.log(res);
+  // 展开运算符实现数据拼接
+  goodsList.value = [...goodsList.value, ...res.result.items];
+  if (res.result.items.length === 0) {
+    disabled.value = true;
+  }
+};
+
+const disabled = ref(false);
 </script>
 
 <template>
@@ -89,12 +134,13 @@ onMounted(() => {
       </el-breadcrumb>
     </div>
     <div class="sub-container">
-      <el-tabs>
+      <el-tabs v-model="reqData.sortField" @tab-change="tabChange">
+        <!-- 这里的 el-tab-pane 标签切换后会自动将 name 里的值传到 reqData,value.sortField 里面 -->
         <el-tab-pane label="最新商品" name="publishTime">最新商品</el-tab-pane>
         <el-tab-pane label="最高人气" name="orderNum">最高人气</el-tab-pane>
         <el-tab-pane label="评论最多" name="evaluateNum">评论最多</el-tab-pane>
       </el-tabs>
-      <div class="body">
+      <div class="body" v-infinite-scroll="load" :infinite-scroll-disabled="disabled">
         <!-- 商品列表-->
         <GoodsItem v-for="goods in goodsList" :goods="goods" :key="goods.id" />
       </div>
