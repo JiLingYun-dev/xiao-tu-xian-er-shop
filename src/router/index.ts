@@ -3,8 +3,8 @@ import Layout from "../views/Layout/index.vue";
 import Login from "@/views/Login/index.vue";
 import Home from "@/views/Home/index.vue";
 import Category from "@/views/Category/index.vue";
-import Details from "@/views/Home/components/HomeDetail.vue";
 import SubCategory from "@/views/SubCategory/index.vue";
+import Detail from "@/views/Detail/index.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,13 +16,6 @@ const router = createRouter({
         {
           path: "", // 这里将路由置空，当浏览器访问"/"的时候，默认显示这个组件（默认二级路由）
           component: Home,
-          children: [
-            {
-              // 这里的动态段必须和 RouterLink 绑定的动态参数保持一致
-              path: "detail/:id",
-              component: Details,
-            },
-          ],
         },
         {
           path: "category/:id",
@@ -32,6 +25,10 @@ const router = createRouter({
           path: "category/sub/:id",
           component: SubCategory,
         },
+        {
+          path: "detail/:id",
+          component: Detail,
+        },
       ],
     },
     {
@@ -39,6 +36,12 @@ const router = createRouter({
       component: Login,
     },
   ],
+  // 添加路由滚动行为等配置项
+  scrollBehavior() {
+    return {
+      top: 0,
+    };
+  },
 });
 
 export default router;
