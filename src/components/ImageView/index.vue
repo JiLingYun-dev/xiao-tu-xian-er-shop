@@ -17,6 +17,39 @@ const activeIndex = ref(0);
 const enterhandler = (i: number) => {
   activeIndex.value = i;
 };
+
+const left = ref(0);
+const top = ref(0);
+// 获取鼠标相对位置
+const target = ref();
+// 这里的 useMouseInElement() 的返回值是 shallowRef 对象
+const { elementX, elementY, isOutside } = useMouseInElement(target);
+
+// 控制滑块跟随鼠标移动（监听elementX/Y变化，一旦变化，重新设置left/top）
+// 注意区分 useMouseInElement 获取的是鼠标相对于父容器的左上角的坐标，而蒙层的坐标是蒙层左上角相对父容器左上角的坐标*********************
+watch([elementX, elementY], () => {
+  // 鼠标有效范围控制
+  if (elementX.value > 100 && elementX.value < 300) {
+    left.value = elementX.value - 100;
+  }
+  if (elementY.value > 100 && elementY.value < 300) {
+    top.value = elementY.value - 100;
+  }
+
+  // 鼠标边界范围控制
+  if (elementX.value > 300) {
+    left.value = 200;
+  }
+  if (elementX.value < 100) {
+    left.value = 0;
+  }
+  if (elementY.value < 100) {
+    top.value = 0;
+  }
+  if (elementY.value > 300) {
+    top.value = 200;
+  }
+});
 </script>
 
 <template>
@@ -25,7 +58,7 @@ const enterhandler = (i: number) => {
     <div class="middle" ref="target">
       <img :src="imageList[activeIndex]" alt="" />
       <!-- 蒙层小滑块 -->
-      <div class="layer" :style="{ left: `0px`, top: `0px` }"></div>
+      <div class="layer" :style="{ left: `${left}px`, top: `${top}px` }"></div>
     </div>
     <!-- 小图列表 -->
     <ul class="small">
@@ -56,15 +89,17 @@ const enterhandler = (i: number) => {
 
 <style scoped lang="scss">
 .goods-image {
+  // 蒙层浮动效果的实现需要父容器 position: relative; 作为偏移参照物，容器本身需要设置为 position: absolute; 脱离文档流
   width: 480px;
   height: 400px;
-  position: relative;
+  // position: relative;
   display: flex;
 
   .middle {
     width: 400px;
     height: 400px;
     background: #f5f5f5;
+    position: relative;
   }
 
   .large {
