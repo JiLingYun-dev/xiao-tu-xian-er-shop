@@ -1,15 +1,23 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, type PropType } from "vue";
 import { useMouseInElement } from "@vueuse/core";
 
+// props 适配图片列表
+defineProps({
+  imageList: {
+    type: Array as PropType<string[]>, // 这里对Array进行类型注解
+    // 这里的 default 要用工厂函数
+    default: () => [],
+  },
+});
 // 图片列表
-const imageList = [
-  "https://yanxuan-item.nosdn.127.net/d917c92e663c5ed0bb577c7ded73e4ec.png",
-  "https://yanxuan-item.nosdn.127.net/e801b9572f0b0c02a52952b01adab967.jpg",
-  "https://yanxuan-item.nosdn.127.net/b52c447ad472d51adbdde1a83f550ac2.jpg",
-  "https://yanxuan-item.nosdn.127.net/f93243224dc37674dfca5874fe089c60.jpg",
-  "https://yanxuan-item.nosdn.127.net/f881cfe7de9a576aaeea6ee0d1d24823.jpg",
-];
+// const imageList = [
+//   "https://yanxuan-item.nosdn.127.net/d917c92e663c5ed0bb577c7ded73e4ec.png",
+//   "https://yanxuan-item.nosdn.127.net/e801b9572f0b0c02a52952b01adab967.jpg",
+//   "https://yanxuan-item.nosdn.127.net/b52c447ad472d51adbdde1a83f550ac2.jpg",
+//   "https://yanxuan-item.nosdn.127.net/f93243224dc37674dfca5874fe089c60.jpg",
+//   "https://yanxuan-item.nosdn.127.net/f881cfe7de9a576aaeea6ee0d1d24823.jpg",
+// ];
 
 // 小图切换大图显示
 const activeIndex = ref(0);
@@ -20,6 +28,10 @@ const enterhandler = (i: number) => {
 
 const left = ref(0);
 const top = ref(0);
+
+// 控制大图的显示
+const positionX = ref(0);
+const positionY = ref(0);
 // 获取鼠标相对位置
 const target = ref();
 // 这里的 useMouseInElement() 的返回值是 shallowRef 对象
@@ -27,7 +39,11 @@ const { elementX, elementY, isOutside } = useMouseInElement(target);
 
 // 控制滑块跟随鼠标移动（监听elementX/Y变化，一旦变化，重新设置left/top）
 // 注意区分 useMouseInElement 获取的是鼠标相对于父容器的左上角的坐标，而蒙层的坐标是蒙层左上角相对父容器左上角的坐标*********************
+
 watch([elementX, elementY], () => {
+  // 如果鼠标没有在目标区域里面，则不执行以下效果
+  if (isOutside.value) return;
+
   // 鼠标有效范围控制
   if (elementX.value > 100 && elementX.value < 300) {
     left.value = elementX.value - 100;
@@ -49,6 +65,10 @@ watch([elementX, elementY], () => {
   if (elementY.value > 300) {
     top.value = 200;
   }
+
+  // 遮罩层往右移 → 用户想看图片的右边 → 背景图要往左移，把右边内容"拉"进窗口
+  positionX.value = -left.value * 2;
+  positionY.value = -top.value * 2;
 });
 </script>
 
@@ -56,9 +76,10 @@ watch([elementX, elementY], () => {
   <div class="goods-image">
     <!-- 左侧大图-->
     <div class="middle" ref="target">
-      <img :src="imageList[activeIndex]" alt="" />
+      <!-- 空值合并运算符 -->
+      <img :src="imageList[activeIndex] ?? ''" alt="" />
       <!-- 蒙层小滑块 -->
-      <div class="layer" :style="{ left: `${left}px`, top: `${top}px` }"></div>
+      <div class="layer" :style="{ left: `${left}px`, top: `${top}px` }" v-show="!isOutside"></div>
     </div>
     <!-- 小图列表 -->
     <ul class="small">
@@ -77,12 +98,12 @@ watch([elementX, elementY], () => {
       class="large"
       :style="[
         {
-          backgroundImage: `url(${imageList[0]})`,
-          backgroundPositionX: `0px`,
-          backgroundPositionY: `0px`,
+          backgroundImage: `url(${imageList[activeIndex]})`,
+          backgroundPositionX: `${positionX}px`,
+          backgroundPositionY: `${positionY}px`,
         },
       ]"
-      v-show="false"
+      v-show="!isOutside"
     ></div>
   </div>
 </template>
@@ -92,7 +113,7 @@ watch([elementX, elementY], () => {
   // 蒙层浮动效果的实现需要父容器 position: relative; 作为偏移参照物，容器本身需要设置为 position: absolute; 脱离文档流
   width: 480px;
   height: 400px;
-  // position: relative;
+  position: relative;
   display: flex;
 
   .middle {

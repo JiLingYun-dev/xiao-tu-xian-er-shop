@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { getDetailAPI } from "@/apis/detail";
 import DetailHot from "./components/DetailHot.vue";
-import ImageView from "@/components/ImageView/index.vue";
+// 以下替换而为全局导入
+// import ImageView from "@/components/ImageView/index.vue";
+// import XtuSKU from "@/components/XtxSKU/index.vue";
 
 import type { Res, Result } from "./models/Goods.ts";
 
@@ -48,7 +50,7 @@ onMounted(() => {
           <div class="goods-info">
             <div class="media">
               <!-- 图片预览区 -->
-              <ImageView></ImageView>
+              <SKUImageView :imageList="goods.mainPictures"></SKUImageView>
               <!-- 统计数量 -->
               <ul class="goods-sales">
                 <li>
@@ -97,7 +99,7 @@ onMounted(() => {
                 </dl>
               </div>
               <!-- sku组件 -->
-
+              <XtxSKU :goods="goods"></XtxSKU>
               <!-- 数据组件 -->
 
               <!-- 按钮组件 -->

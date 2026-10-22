@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { getHotGoodsAPI } from "@/apis/detail";
+
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 
 // 这里的 defineProps 通过泛型限制传参类型
 const props = defineProps<{ hotType: 1 | 2 }>(); // 这里的 defineProps 的返回值是一个 Proxy 对象
+
+// String 和 string
+// class type interface | &
 
 interface Item {
   id: string;
