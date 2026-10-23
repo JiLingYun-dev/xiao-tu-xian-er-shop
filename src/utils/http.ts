@@ -1,4 +1,6 @@
 import axios from "axios";
+import { ElMessage } from "element-plus";
+import "element-plus/theme-chalk/el-message.css";
 
 // 创建 axios 实例，统一管理接口请求的公共配置
 // 在 JS 中，函数是一种特殊的对象，所以可以挂载方法，这里的http本质上是一个函数（特殊的对象）
@@ -32,6 +34,11 @@ httpInstance.interceptors.request.use(
 httpInstance.interceptors.response.use(
   (res) => res.data,
   (e) => {
+    // 统一错误提示
+    ElMessage({
+      type: "warning",
+      message: e.response.data.message,
+    });
     return Promise.reject(e);
   },
 );
