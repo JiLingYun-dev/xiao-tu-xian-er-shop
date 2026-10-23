@@ -1,4 +1,7 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useUserStore } from "@/stores/user";
+const useStore = useUserStore();
+</script>
 
 <template>
   <nav class="app-topnav">
@@ -7,12 +10,15 @@
         <!-- 多模版渲染 区分登录状态和非登录状态 -->
 
         <!-- 适配思路: 登录时显示第一块 非登录时显示第二块  是否有token -->
-        <template v-if="false">
+        <template v-if="useStore.userInfo.token">
           <li>
-            <a href="javascript:;"><i class="iconfont icon-user"></i>季凌云</a>
+            <a href="javascript:;"
+              ><i class="iconfont icon-user">{{ useStore.userInfo.account }}</i></a
+            >
           </li>
           <li>
             <el-popconfirm title="确认退出吗?" confirm-button-text="确认" cancel-button-text="取消">
+              <!-- 这里的 #reference 是具名插槽, #是 v-slot 的简写形式 -->
               <template #reference>
                 <a href="javascript:;">退出登录</a>
               </template>
