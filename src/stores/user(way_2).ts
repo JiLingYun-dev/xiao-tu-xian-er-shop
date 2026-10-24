@@ -14,10 +14,12 @@ export const persistPlugin = ({ store }: PiniaPluginContext) => {
     }
   }
 
-  store.$subscribe(
+  const unsubscribe = store.$subscribe(
+    // _m 的 _ 前缀是"我故意不用这个参数"的通用标记，避免 ESLint 报"未使用变量"。
     (_m, state) => {
       localStorage.setItem(key, JSON.stringify(state));
     },
+    // 这里的持久化会脱离生命周期
     { detached: true },
   );
 };

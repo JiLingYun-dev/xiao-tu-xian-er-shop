@@ -19,7 +19,6 @@ const app = createApp(App);
 // getCategory().then((res) => {
 //   console.log(res);
 // });
-
 app.use(pinia);
 app.use(router);
 app.use(lazyPlugin);

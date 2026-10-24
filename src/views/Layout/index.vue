@@ -6,7 +6,7 @@ import LayoutHeader from "./components/LayoutHeader.vue";
 import LayoutFooter from "./components/LayoutFooter.vue";
 import LayoutFixed from "./components/LayoutFixed.vue";
 
-import useCategoryStore from "@/stores/category.ts";
+import useCategoryStore from "@/stores/categoryStore.ts";
 
 const categoryStore = useCategoryStore();
 

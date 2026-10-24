@@ -9,6 +9,7 @@ import type { Res, Result } from "./models/Goods.ts";
 
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { ElMessage } from "element-plus";
 
 const route = useRoute();
 const goods = ref({} as Result);
@@ -21,6 +22,46 @@ const getGoods = async () => {
 onMounted(() => {
   getGoods();
 });
+
+interface SkuObj {
+  skuId: string;
+  price: number;
+  oldPrice: string;
+  inventory: number;
+  specsText: string;
+}
+
+const count = ref(1);
+
+const countChange = (val: any) => {
+  console.log(val);
+};
+let skuObj = {} as SkuObj;
+const skuChange = (sku: any) => {
+  skuObj = sku;
+  // console.log(sku);
+};
+
+import { useCartStore } from "@/stores/cartStore.ts";
+const cartStore = useCartStore();
+const addCart = () => {
+  if (skuObj.skuId ?? "") {
+    // 规则已经选择
+    cartStore.addCart({
+      id: goods.value.id,
+      name: goods.value.name,
+      picture: goods.value.mainPictures?.[0] ?? "",
+      price: goods.value.price,
+      count: count.value,
+      skuId: skuObj.skuId,
+      attrsText: skuObj.specsText,
+      selected: true,
+    });
+  } else {
+    // 规则没有选择
+    ElMessage.warning("清选择规格");
+  }
+};
 </script>
 
 <template>
@@ -50,7 +91,7 @@ onMounted(() => {
           <div class="goods-info">
             <div class="media">
               <!-- 图片预览区 -->
-              <SKUImageView :imageList="goods.mainPictures"></SKUImageView>
+              <XtxImageView :imageList="goods.mainPictures"></XtxImageView>
               <!-- 统计数量 -->
               <ul class="goods-sales">
                 <li>
@@ -99,12 +140,12 @@ onMounted(() => {
                 </dl>
               </div>
               <!-- sku组件 -->
-              <XtxSKU :goods="goods"></XtxSKU>
+              <XtxSKU :goods="goods" @change="skuChange"></XtxSKU>
               <!-- 数据组件 -->
-
+              <el-input-number v-model="count" @change="countChange"></el-input-number>
               <!-- 按钮组件 -->
               <div>
-                <el-button size="large" class="btn"> 加入购物车 </el-button>
+                <el-button size="large" class="btn" @click="addCart"> 加入购物车 </el-button>
               </div>
             </div>
           </div>

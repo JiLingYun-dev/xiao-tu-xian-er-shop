@@ -2,12 +2,16 @@
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { loginAPI } from "@/apis/user";
+import { useCartStore } from "./cartStore";
+import { mergeCartAPI } from "@/apis/cart";
 
 // 约定写法,为每一个pinia库分配ID,防止ID相同导致的数据共享
 const STORAGE_KEY = "userStore:userInfo";
 
 export const useUserStore = defineStore("userStore", () => {
   const raw = localStorage.getItem("STORAGE_KEY ");
+
+  const cartStore = useCartStore();
 
   // 这里的空对象不会被当作undefined处理
   let initValue = {};
@@ -27,13 +31,25 @@ export const useUserStore = defineStore("userStore", () => {
 
   const getUserInfo = async (account: string, password: string) => {
     const res = (await loginAPI({ account, password })) as any;
-
     userInfo.value = res.result;
+    // 合并购物车的操作
+    // 通过map对元数组进行了一个映射,返回一个新的数组,原数组不变
+    mergeCartAPI(
+      cartStore.cartList.map((item) => {
+        return {
+          skuId: item.skuId,
+          selected: item.selected,
+          count: item.count,
+        };
+      }),
+    );
+    cartStore.updateCartList();
   };
 
   // 实现登出清除本地存储的功能
   const clearUserInfo = () => {
     userInfo.value = {};
+    cartStore.clearCart();
     localStorage.removeItem(STORAGE_KEY);
   };
 

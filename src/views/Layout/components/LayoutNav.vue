@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { useUserStore } from "@/stores/user";
+import { useRouter } from "vue-router";
+
+import { useUserStore } from "@/stores/userStore";
 const useStore = useUserStore();
+
+const router = useRouter();
+const confirm = () => {
+  useStore.clearUserInfo();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -17,10 +25,15 @@ const useStore = useUserStore();
             >
           </li>
           <li>
-            <el-popconfirm title="确认退出吗?" confirm-button-text="确认" cancel-button-text="取消">
+            <el-popconfirm
+              @confirm="confirm"
+              title="确认退出吗?"
+              confirm-button-text="确认"
+              cancel-button-text="取消"
+            >
               <!-- 这里的 #reference 是具名插槽, #是 v-slot 的简写形式 -->
               <template #reference>
-                <a href="javascript:;">退出登录</a>
+                <a href="javascript:;" @click="">退出登录</a>
               </template>
             </el-popconfirm>
           </li>

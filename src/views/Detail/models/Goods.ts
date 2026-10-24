@@ -102,7 +102,7 @@ export interface Result {
   name: string;
   spuCode: string;
   desc: string;
-  price: string;
+  price: number;
   oldPrice: string;
   discount: number;
   inventory: number;
@@ -112,7 +112,7 @@ export interface Result {
   collectCount: number;
   mainVideos: [];
   videoScale: number;
-  mainPictures: string[];
+  mainPictures: string[] | undefined;
   specs: SpecsItem[];
   skus: Skus[];
   categories: Categories[];

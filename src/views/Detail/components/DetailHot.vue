@@ -45,7 +45,7 @@ const getHotList = async () => {
 
   hotList.value = res.result;
 
-  console.log(res);
+  // console.log(res);
 };
 
 onMounted(() => {

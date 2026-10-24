@@ -1,6 +1,8 @@
 import axios from "axios";
 import { ElMessage } from "element-plus";
 import "element-plus/theme-chalk/el-message.css";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/userStore";
 
 // 创建 axios 实例，统一管理接口请求的公共配置
 // 在 JS 中，函数是一种特殊的对象，所以可以挂载方法，这里的http本质上是一个函数（特殊的对象）
@@ -14,7 +16,15 @@ const httpInstance = axios.create({
 
 // httpInstance.interceptors.request 表示这是对请求进行拦截; .use(onFulfilled, onRejected) 表示注册两个回调函数
 httpInstance.interceptors.request.use(
+  // 这里的 config 是 axios 内部维护的一个 JavaScript 对象, 他描述 请求报文的内容以及发送方法
   (config) => {
+    const userStore = useUserStore();
+
+    const token = userStore.userInfo.token;
+    if (token) {
+      // 这里的拼接格式由后端提供
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config; // 请求成功发出前执行，接收请求配置 config，必须返回 config（或修改后的 config），否则请求不会执行
   },
   (e) => Promise.reject(e),
@@ -39,6 +49,15 @@ httpInstance.interceptors.response.use(
       type: "warning",
       message: e.response.data.message,
     });
+
+    // 401 token 过期,校验失败情况处理
+    if (e.response.status === 401) {
+      const useStore = useUserStore();
+      useStore.clearUserInfo();
+
+      useRouter().push("/login");
+    }
+
     return Promise.reject(e);
   },
 );
